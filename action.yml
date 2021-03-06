@@ -6,13 +6,14 @@ inputs:
     required: true
     default: ${{ github.token }}
   version_file:
-    description: Version file keep track of latest version.
+    description: Version filename to keep track of latest version.
     required: true
+    default: "version.txt"
   skip_ci:
     description: Specifies if change to version_file should skip CI, valid values are "true" or "false", defaults to "true".
     required: true
     default: "true"
-  skip_ci_template_string:
+  skip_ci_commit_string:
     description: If skip_ci == true, specifies string appended to commit, defaults to "[skip ci]".
     required: false
     default: "[skip ci]"

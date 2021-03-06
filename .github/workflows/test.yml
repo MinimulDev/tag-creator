@@ -17,4 +17,3 @@ jobs:
         uses: ./
         with:
           skip_ci: "false"
-          version_file: "version.txt"

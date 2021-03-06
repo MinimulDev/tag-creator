@@ -1,18 +1,27 @@
 import * as core from "@actions/core"
+import * as base64 from "base-64"
 import {Octokit, RestEndpointMethodTypes} from "@octokit/rest"
 
 import Utils from "./utils"
-import {VersionType} from "./types";
+import {VersionType} from "./types"
 
 export type Input = {
     readonly token: string
     readonly owner: string
     readonly repo: string
     readonly skip_ci: boolean
-    readonly version_file: string | null
+    readonly skip_ci_commit_string: string
+    readonly version_filename: string
 }
 
 const INVALID_MERGE_MSG = "Merge commit message contains more info than needed to make a tag"
+
+const VERSION_TEMPLATE = `
+MAJOR=<MAJOR_VERSION>
+MINOR=<MINOR_VERSION>
+PATCH=<PATCH_VERSION>
+HOTFIX=<HOTFIX_VERSION>
+`
 
 class ActionManager {
 
@@ -110,6 +119,54 @@ class ActionManager {
         if (create_release_response.status == 201) {
             core.info(`successfully created tag ${str_new_version} --> ${create_release_response.data.html_url}`)
         }
+
+        const version_file = this.input.version_filename
+
+        const new_version_content: string = `${VERSION_TEMPLATE}`
+            .replace("<MAJOR_VERSION>", `${new_version.major}`)
+            .replace("<MINOR_VERSION>", `${new_version.minor}`)
+            .replace("<PATCH_VERSION>", `${new_version.patch}`)
+            .replace("<HOTFIX_VERSION>", `${new_version.hotfix}`)
+
+        let update_msg = `release: bump version ${str_new_version}`
+
+        if (this.input.skip_ci) {
+            update_msg += ` ${this.input.skip_ci_commit_string}`
+        }
+
+        let new_content_blob_sha: string | null
+
+        try {
+            const new_content_blob_response = await kit.request("POST /repos/{owner}/{repo}/git/blobs", {
+                ...base_params,
+                content: new_version_content
+            })
+
+            new_content_blob_sha = new_content_blob_response.data.sha
+
+        } catch (e) {
+            core.error(e)
+            new_content_blob_sha = null
+        }
+
+        if (new_content_blob_sha == null) {
+            return
+        }
+
+        try {
+            await kit.request(`PUT /repos/{owner}/{repo}/contents/${version_file}`, {
+                ...base_params,
+                message: update_msg,
+                content: base64.encode(new_version_content),
+                sha: new_content_blob_sha
+            })
+
+            core.info(`successfully updated ${version_file}`)
+        } catch (e) {
+            core.error(e)
+            return
+        }
+
     }
 }
 
