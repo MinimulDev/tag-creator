@@ -13,3 +13,6 @@ jobs:
       - name: test
         id: minimul_tag_creator_test
         uses: ./
+        with:
+          skip_ci: "false"
+          version_file: "version.txt"
