@@ -12,7 +12,6 @@ new Promise(async () => {
     const repo = github.context.repo.repo
 
     if (token) {
-
         const input: Input = {
             token: token,
             owner: owner,

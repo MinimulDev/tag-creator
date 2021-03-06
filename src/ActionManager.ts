@@ -1,6 +1,8 @@
 import * as core from "@actions/core"
-import * as github from "@actions/github"
 import {Octokit, RestEndpointMethodTypes} from "@octokit/rest"
+
+import Utils from "./utils"
+import {VersionType} from "./types";
 
 export type Input = {
     readonly token: string
@@ -9,6 +11,8 @@ export type Input = {
     readonly skip_ci: boolean
     readonly version_file: string | null
 }
+
+const INVALID_MERGE_MSG = "Merge commit message contains more info than needed to make a tag"
 
 class ActionManager {
 
@@ -25,28 +29,69 @@ class ActionManager {
     }
 
     private _run = async () => {
+        const owner = this.input.owner
         const kit = new Octokit({
             auth: this.input.token
         })
 
-        const current_ref = github.context.ref
+        const repository = await kit.request("GET /repos/{owner}/{repo}")
 
-        let latest_release: RestEndpointMethodTypes["repos"]["getLatestRelease"]["response"] | null
+        const default_branch = repository.data.default_branch
+
+        const latest_commit = await kit.request(`GET /repos/{owner}/{repo}/commits/${default_branch}`)
+
+        const message = latest_commit.data.message
+
+        const is_merge_commit = Utils.isMergeCommit(message)
+
+        if (!is_merge_commit) {
+            core.info("latest commit is not a Merge commit")
+            return
+        }
+
+        const merged_branch = Utils.getBranchFromMergeCommit(owner, message)
+
+        if (merged_branch == null) {
+            core.info(INVALID_MERGE_MSG)
+            return
+        }
+
+        const branch_type = Utils.getBranchType(merged_branch)
+
+        if (branch_type == null) {
+            core.info(`could not process merged branch ${merged_branch}`)
+            return
+        }
+
+        let current_version: VersionType | null
 
         try {
-            latest_release = await kit.repos.getLatestRelease({
+            let latest_release: RestEndpointMethodTypes["repos"]["getLatestRelease"]["response"] = await kit.repos.getLatestRelease({
                 owner: this.input.owner,
                 repo: this.input.repo
             })
 
             core.info(`latest release response ${latest_release}`)
+
+            current_version = Utils.getVersion(latest_release.data.tag_name)
         } catch (e) {
-            latest_release = null
+            current_version = Utils.getVersion("0.0.0")
         }
 
-        core.info(`current ref ${current_ref}`)
-    }
+        if (current_version == null) {
+            core.info("could not process latest release tag_name")
+            return
+        }
 
+        const new_version = Utils.getNewVersion(current_version, branch_type)
+
+        if (new_version == null) {
+            core.info(`could not update version from branch ${merged_branch}`)
+            return
+        }
+
+        core.info(`new version ${Utils.versionTypeToString(new_version)}`)
+    }
 }
 
 export default ActionManager
