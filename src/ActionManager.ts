@@ -42,10 +42,14 @@ class ActionManager {
 
         const default_branch = repository.data.default_branch
 
+        core.info(`using default branch ${default_branch}`)
+
         const latest_commit = await kit.request(`GET /repos/{owner}/{repo}/commits/${default_branch}`, {
             owner: owner,
             repo: repo
         })
+
+        core.info(`latest commit ${latest_commit.data}`)
 
         const message = latest_commit.data.message
 
