@@ -2,9 +2,11 @@ on:
   pull_request:
     branches:
       - develop
+    types: [ closed ]
 
 jobs:
   test:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     name: test Minimul tag creation action
     steps:
