@@ -49,9 +49,7 @@ class ActionManager {
             repo: repo
         })
 
-        core.info(`latest commit ${JSON.stringify(latest_commit.data)}`)
-
-        const message = latest_commit.data.message
+        const message = latest_commit.data.commit.message
 
         const is_merge_commit = Utils.isMergeCommit(message)
 
