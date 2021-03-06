@@ -29,12 +29,12 @@ class ActionManager {
         })
 
         try {
-            const latestRelease: RestEndpointMethodTypes["repos"]["listReleases"]["response"] = await kit.repos.listReleases({
+            const latestRelease: RestEndpointMethodTypes["repos"]["getLatestRelease"]["response"] = await kit.repos.getLatestRelease({
                 owner: this.input.owner,
                 repo: this.input.repo
             })
 
-            console.log(`latest release respons ${latestRelease}`)
+            core.info(`latest release response ${latestRelease.data}`)
         } catch (e) {
             core.setFailed(e)
         }
