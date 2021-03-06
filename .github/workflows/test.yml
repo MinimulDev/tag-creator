@@ -1,0 +1,15 @@
+on:
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: test Minimul tag creation action
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: test
+        id: minimul_tag_creator_test
+        uses: ./

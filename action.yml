@@ -1,0 +1,21 @@
+name: "Minimul tag creator"
+description: "Minimul kit GitHub tag creator"
+inputs:
+  token:
+    description: GITHUB_TOKEN.
+    required: true
+    default: ${{ github.token }}
+  version_file:
+    description: Version file keep track of latest version.
+    required: true
+  skip_ci:
+    description: Specifies if change to version_file should skip CI, valid values are "true" or "false", defaults to "true".
+    required: true
+    default: "true"
+  skip_ci_template_string:
+    description: If skip_ci == true, specifies string appended to commit, defaults to "[skip ci]".
+    required: false
+    default: "[skip ci]"
+runs:
+  using: node12
+  main: dist/bundle.js
