@@ -1,4 +1,4 @@
-import {Octokit} from "@octokit/rest"
+import {Octokit, RestEndpointMethodTypes} from "@octokit/rest"
 
 export type Input = {
     readonly token: string
@@ -27,12 +27,12 @@ class ActionManager {
             auth: this.input.token
         })
 
-        const releases = await kit.repos.listReleases({
+        const latestRelease: RestEndpointMethodTypes["repos"]["listReleases"]["response"] = await kit.repos.listReleases({
             owner: this.input.owner,
             repo: this.input.repo
         })
 
-        console.log(releases)
+        console.log(`latest release respons ${latestRelease}`)
     }
 
 }
