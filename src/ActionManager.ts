@@ -1,3 +1,4 @@
+import * as core from "@actions/core"
 import {Octokit, RestEndpointMethodTypes} from "@octokit/rest"
 
 export type Input = {
@@ -27,12 +28,16 @@ class ActionManager {
             auth: this.input.token
         })
 
-        const latestRelease: RestEndpointMethodTypes["repos"]["listReleases"]["response"] = await kit.repos.listReleases({
-            owner: this.input.owner,
-            repo: this.input.repo
-        })
+        try {
+            const latestRelease: RestEndpointMethodTypes["repos"]["listReleases"]["response"] = await kit.repos.listReleases({
+                owner: this.input.owner,
+                repo: this.input.repo
+            })
 
-        console.log(`latest release respons ${latestRelease}`)
+            console.log(`latest release respons ${latestRelease}`)
+        } catch (e) {
+            core.setFailed(e)
+        }
     }
 
 }
