@@ -30,15 +30,22 @@ class ActionManager {
 
     private _run = async () => {
         const owner = this.input.owner
+        const repo = this.input.repo
         const kit = new Octokit({
             auth: this.input.token
         })
 
-        const repository = await kit.request("GET /repos/{owner}/{repo}")
+        const repository = await kit.request("GET /repos/{owner}/{repo}", {
+            owner: owner,
+            repo: repo
+        })
 
         const default_branch = repository.data.default_branch
 
-        const latest_commit = await kit.request(`GET /repos/{owner}/{repo}/commits/${default_branch}`)
+        const latest_commit = await kit.request(`GET /repos/{owner}/{repo}/commits/${default_branch}`, {
+            owner: owner,
+            repo: repo
+        })
 
         const message = latest_commit.data.message
 
