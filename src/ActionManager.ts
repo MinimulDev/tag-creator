@@ -52,7 +52,7 @@ class ActionManager {
         const is_merge_commit = Utils.isMergeCommit(message)
 
         if (!is_merge_commit) {
-            core.info("latest commit is not a Merge commit")
+            core.info(`latest commit is not a Merge commit: ${message}`)
             return
         }
 
