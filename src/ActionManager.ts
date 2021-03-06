@@ -34,7 +34,7 @@ class ActionManager {
                 repo: this.input.repo
             })
 
-            core.info(`latest release response ${latestRelease.data}`)
+            core.info(`latest release response ${latestRelease}`)
         } catch (e) {
             core.setFailed(e)
         }
