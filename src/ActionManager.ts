@@ -1,3 +1,4 @@
+import * as core from "@actions/core"
 import {Octokit} from "@octokit/rest"
 
 export type Input = {
@@ -27,12 +28,16 @@ class ActionManager {
             auth: this.input.token
         })
 
-        const releases = await kit.repos.listReleases({
-            owner: this.input.owner,
-            repo: this.input.repo
-        })
+        try {
+            const releases = await kit.repos.listReleases({
+                owner: this.input.owner,
+                repo: this.input.repo
+            })
 
-        console.log(releases)
+            core.debug(`releases: ${releases}`)
+        } catch (e) {
+            core.setFailed(e)
+        }
     }
 
 }
