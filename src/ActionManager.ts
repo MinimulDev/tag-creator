@@ -31,23 +31,23 @@ class ActionManager {
     private _run = async () => {
         const owner = this.input.owner
         const repo = this.input.repo
+
+        const base_params = {
+            owner: owner,
+            repo: repo
+        }
+
         const kit = new Octokit({
             auth: this.input.token
         })
 
-        const repository = await kit.request("GET /repos/{owner}/{repo}", {
-            owner: owner,
-            repo: repo
-        })
+        const repository = await kit.request("GET /repos/{owner}/{repo}", base_params)
 
         const default_branch = repository.data.default_branch
 
         core.info(`using default branch ${default_branch}`)
 
-        const latest_commit = await kit.request(`GET /repos/{owner}/{repo}/commits/${default_branch}`, {
-            owner: owner,
-            repo: repo
-        })
+        const latest_commit = await kit.request(`GET /repos/{owner}/{repo}/commits/${default_branch}`, base_params)
 
         const message = latest_commit.data.commit.message
 
@@ -75,10 +75,7 @@ class ActionManager {
         let current_version: VersionType | null
 
         try {
-            let latest_release: RestEndpointMethodTypes["repos"]["getLatestRelease"]["response"] = await kit.repos.getLatestRelease({
-                owner: this.input.owner,
-                repo: this.input.repo
-            })
+            let latest_release: RestEndpointMethodTypes["repos"]["getLatestRelease"]["response"] = await kit.repos.getLatestRelease(base_params)
 
             core.info(`latest release response ${latest_release}`)
 
@@ -99,7 +96,20 @@ class ActionManager {
             return
         }
 
-        core.info(`new version ${Utils.versionTypeToString(new_version)}`)
+        const str_new_version = Utils.versionTypeToString(new_version)
+
+        core.info(`using version ${str_new_version}`)
+
+        const create_release_response = await kit.request("POST /repos/{owner}/{repo}/releases", {
+            ...base_params,
+            tag_name: str_new_version,
+            name: `v${str_new_version}`,
+            prerelease: true
+        })
+
+        if (create_release_response.status == 201) {
+            core.info(`successfully created tag ${str_new_version} --> ${create_release_response.data.html_url}`)
+        }
     }
 }
 
