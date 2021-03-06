@@ -1,4 +1,5 @@
 import * as core from "@actions/core"
+import * as github from "@actions/github"
 import {Octokit, RestEndpointMethodTypes} from "@octokit/rest"
 
 export type Input = {
@@ -28,16 +29,22 @@ class ActionManager {
             auth: this.input.token
         })
 
+        const current_ref = github.context.ref
+
+        let latest_release: RestEndpointMethodTypes["repos"]["getLatestRelease"]["response"] | null
+
         try {
-            const latestRelease: RestEndpointMethodTypes["repos"]["getLatestRelease"]["response"] = await kit.repos.getLatestRelease({
+            latest_release = await kit.repos.getLatestRelease({
                 owner: this.input.owner,
                 repo: this.input.repo
             })
 
-            core.info(`latest release response ${latestRelease}`)
+            core.info(`latest release response ${latest_release}`)
         } catch (e) {
-            core.setFailed(e)
+            latest_release = null
         }
+
+        core.info(`current ref ${current_ref}`)
     }
 
 }
