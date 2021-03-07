@@ -1,6 +1,6 @@
 import * as core from "@actions/core"
 import * as base64 from "base-64"
-import {Octokit, RestEndpointMethodTypes} from "@octokit/rest"
+import {Octokit} from "@octokit/rest"
 
 import Utils from "./utils"
 import {VersionType} from "./types"
@@ -81,24 +81,49 @@ class ActionManager {
             return
         }
 
-        let current_version: VersionType | null
+        let latest_version: VersionType | null
 
         try {
-            let latest_release: RestEndpointMethodTypes["repos"]["getLatestRelease"]["response"] = await kit.repos.getLatestRelease(base_params)
+            const releases = await kit.request("GET /repos/{owner}/{repo}/releases", {
+                ...base_params
+            })
 
-            core.info(`latest release response ${latest_release}`)
+            if (releases.data.length == 0) {
+                latest_version = Utils.getVersion("0.0.0")
+            } else if (releases.data.length == 1) {
+                latest_version = Utils.getVersion(releases.data[0].tag_name)
+            } else {
 
-            current_version = Utils.getVersion(latest_release.data.tag_name)
+                let max_version = Utils.getVersion(releases.data[0].tag_name)
+
+                if (max_version == null) {
+                    core.info("could not process releases")
+                    return
+                }
+
+                for (let x of releases.data) {
+                    const x_version = Utils.getVersion(x.tag_name)
+                    if (x_version != null) {
+                        const compare = Utils.compareVersions(max_version, x_version)
+                        if (compare == 1) {
+                            max_version = x_version
+                        }
+                    }
+                }
+
+                latest_version = max_version
+            }
+
         } catch (e) {
-            current_version = Utils.getVersion("0.0.0")
+            latest_version = Utils.getVersion("0.0.0")
         }
 
-        if (current_version == null) {
+        if (latest_version == null) {
             core.info("could not process latest release tag_name")
             return
         }
 
-        const new_version = Utils.getNewVersion(current_version, branch_type)
+        const new_version = Utils.getNewVersion(latest_version, branch_type)
 
         if (new_version == null) {
             core.info(`could not update version from branch ${merged_branch}`)
@@ -139,6 +164,7 @@ class ActionManager {
         try {
             const new_content_blob_response = await kit.request("POST /repos/{owner}/{repo}/git/blobs", {
                 ...base_params,
+                encoding: "base64",
                 content: new_version_content
             })
 

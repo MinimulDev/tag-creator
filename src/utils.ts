@@ -62,6 +62,42 @@ class Utils {
         return (hotfix_types).includes(type)
     }
 
+    static compareVersions(first: VersionType, second: VersionType): number {
+        if (first.major == second.major &&
+            first.minor == second.minor &&
+            first.patch == second.patch &&
+            first.hotfix == second.hotfix
+        ) {
+            return 0
+        }
+
+        if (first.major > second.major) {
+            return -1
+        } else if (first.major < second.major) {
+            return 1
+        }
+
+        if (first.minor > second.minor) {
+            return -1
+        } else if (first.minor < second.minor) {
+            return 1
+        }
+
+        if (first.patch > second.patch) {
+            return -1
+        } else if (first.patch < second.patch) {
+            return 1
+        }
+
+        if (first.hotfix > second.hotfix) {
+            return -1
+        } else if (first.hotfix < second.hotfix) {
+            return 1
+        }
+
+        return 0
+    }
+
     static getVersion = (tag_name: string): VersionType | null => {
         const split = tag_name.split(".")
         const l = split.length
