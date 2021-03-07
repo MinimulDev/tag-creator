@@ -53,23 +53,12 @@ class ActionManager {
 
         core.info(`using default branch ${default_branch}`)
 
-        let merged_branch: string | null
+        const merged_branch = this.input.head_ref
 
-        const merged_branch_ref = this.input.head_ref
-
-        try {
-
-            merged_branch = merged_branch_ref.split("ref/heads/")[1]
-
-        } catch (e) {
-            core.error(e)
-            return
-        }
-
-        const branch_type = Utils.getBranchType(merged_branch_ref)
+        const branch_type = Utils.getBranchType(merged_branch)
 
         if (branch_type == null) {
-            core.info(`could not process merged branch ${merged_branch_ref}`)
+            core.info(`could not process merged branch ${merged_branch}`)
             return
         }
 
