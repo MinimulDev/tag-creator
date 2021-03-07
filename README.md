@@ -36,6 +36,7 @@ Welcome to the Minimul Tag Creator GitHub Action!
 - `feature` branches are considered a MINOR update.
 - `chore`, `test`, `bugfix`, `docs` branches are considered a PATCH update.
 - `hotfix` branches are considered a HOTFIX update.
+- Defaults to 'PATCH' update.
 
 ### Example
 
