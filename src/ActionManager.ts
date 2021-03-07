@@ -121,17 +121,6 @@ class ActionManager {
 
         core.info(`using version ${str_new_version}`)
 
-        const create_release_response = await kit.request("POST /repos/{owner}/{repo}/releases", {
-            ...base_params,
-            tag_name: str_new_version,
-            name: `v${str_new_version}`,
-            prerelease: true
-        })
-
-        if (create_release_response.status == 201) {
-            core.info(`successfully created tag ${str_new_version} --> ${create_release_response.data.html_url}`)
-        }
-
         const version_file = this.input.version_filename
 
         const new_version_content: string = `${VERSION_TEMPLATE}`
@@ -215,6 +204,17 @@ class ActionManager {
             }
             core.error("could not update content")
             return
+        }
+
+        const create_release_response = await kit.request("POST /repos/{owner}/{repo}/releases", {
+            ...base_params,
+            tag_name: str_new_version,
+            name: `v${str_new_version}`,
+            prerelease: true
+        })
+
+        if (create_release_response.status == 201) {
+            core.info(`successfully created tag ${str_new_version} --> ${create_release_response.data.html_url}`)
         }
     }
 }
