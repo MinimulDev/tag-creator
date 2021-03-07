@@ -6,7 +6,7 @@ inputs:
     required: true
     default: ${{ github.token }}
   version_file:
-    description: Version filename to keep track of latest version.
+    description: Version file to keep track of latest version. (defaults to version.txt)
     required: true
     default: "version.txt"
   skip_ci:
