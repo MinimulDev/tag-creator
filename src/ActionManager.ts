@@ -56,14 +56,14 @@ class ActionManager {
 
         const merged_branch = this.input.head_ref
 
-        const branch_type = Utils.getBranchType(merged_branch)
+        let branch_type = Utils.getBranchType(merged_branch)
 
         if (branch_type == null) {
-            core.info(`could not process merged branch ${merged_branch}`)
-            return
+            core.info(`invalid merged branch ${merged_branch} defaulting to make 'patch' update`)
+            branch_type = "chore"
         }
 
-        let latest_version: VersionType | null
+        let current_version: VersionType | null
 
         try {
             const releases = await kit.request("GET /repos/{owner}/{repo}/releases", {
@@ -71,9 +71,9 @@ class ActionManager {
             })
 
             if (releases.data.length == 0) {
-                latest_version = Utils.getVersion("0.0.0")
+                current_version = Utils.getVersion("0.0.0")
             } else if (releases.data.length == 1) {
-                latest_version = Utils.getVersion(releases.data[0].tag_name)
+                current_version = Utils.getVersion(releases.data[0].tag_name)
             } else {
 
                 let max_version = Utils.getVersion(releases.data[0].tag_name)
@@ -93,7 +93,7 @@ class ActionManager {
                     }
                 }
 
-                latest_version = max_version
+                current_version = max_version
             }
 
         } catch (e) {
@@ -102,15 +102,15 @@ class ActionManager {
             } else if (e instanceof HttpError) {
                 core.error(e.message)
             }
-            latest_version = Utils.getVersion("0.0.0")
+            current_version = Utils.getVersion("0.0.0")
         }
 
-        if (latest_version == null) {
-            core.info("could not process latest release tag_name")
+        if (current_version == null) {
+            core.info("could not process most recent release tag_name")
             return
         }
 
-        const new_version = Utils.getNewVersion(latest_version, branch_type)
+        const new_version = Utils.getNewVersion(current_version, branch_type)
 
         if (new_version == null) {
             core.info(`could not update version from branch ${merged_branch}`)
@@ -120,17 +120,6 @@ class ActionManager {
         const str_new_version = Utils.versionTypeToString(new_version)
 
         core.info(`using version ${str_new_version}`)
-
-        const create_release_response = await kit.request("POST /repos/{owner}/{repo}/releases", {
-            ...base_params,
-            tag_name: str_new_version,
-            name: `v${str_new_version}`,
-            prerelease: true
-        })
-
-        if (create_release_response.status == 201) {
-            core.info(`successfully created tag ${str_new_version} --> ${create_release_response.data.html_url}`)
-        }
 
         const version_file = this.input.version_filename
 
@@ -215,6 +204,17 @@ class ActionManager {
             }
             core.error("could not update content")
             return
+        }
+
+        const create_release_response = await kit.request("POST /repos/{owner}/{repo}/releases", {
+            ...base_params,
+            tag_name: str_new_version,
+            name: `v${str_new_version}`,
+            prerelease: true
+        })
+
+        if (create_release_response.status == 201) {
+            core.info(`successfully created tag ${str_new_version} --> ${create_release_response.data.html_url}`)
         }
     }
 }
