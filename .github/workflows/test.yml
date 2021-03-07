@@ -1,0 +1,19 @@
+on:
+  pull_request:
+    branches:
+      - develop
+    types: [ closed ]
+
+jobs:
+  test:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    name: test Minimul tag creation action
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: test
+        id: minimul_tag_creator_test
+        uses: ./
+        with:
+          skip_ci: "false"
