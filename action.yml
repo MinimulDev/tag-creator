@@ -18,5 +18,10 @@ inputs:
     required: false
     default: "[skip ci]"
 runs:
-  using: node12
-  main: dist/bundle.js
+  using: docker
+  image: "Dockerfile"
+  args:
+    - ${{ inputs.token }}
+    - ${{ inputs.version_file }}
+    - ${{ inputs.skip_ci }}
+    - ${{ inputs.skip_ci_commit_string }}
