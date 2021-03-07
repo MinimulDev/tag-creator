@@ -1,7 +1,5 @@
 FROM node:12
 
-WORKDIR /srv/app
-
 COPY . .
 
 RUN yarn install --production
