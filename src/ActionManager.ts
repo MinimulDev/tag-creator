@@ -181,11 +181,12 @@ class ActionManager {
         }
 
         try {
-            await kit.request(`PUT /repos/{owner}/{repo}/contents/${version_file}`, {
+            await kit.request("PUT /repos/{owner}/{repo}/contents/{path}", {
                 ...base_params,
                 headers: {
                     accept: "application/vnd.github.v3+json",
                 },
+                path: version_file,
                 message: update_msg,
                 content: base64.encode(new_version_content),
                 sha: new_content_blob_sha
