@@ -1,9 +1,11 @@
 FROM node:12
 
-COPY . .
+COPY package.json .
 
 RUN yarn install --production
 
+COPY . .
+
 RUN yarn build
 
-CMD node dist/bundle.js
+CMD ["sh", "-c", "node dist/bundle.js"]
