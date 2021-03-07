@@ -9,8 +9,18 @@ new Promise(async () => {
     const skip_ci = core.getInput("token")
     const version_filename = core.getInput("version_file")
     const skip_ci_commit_string = core.getInput("skip_ci_commit_string")
+
     const owner = github.context.repo.owner
     const repo = github.context.repo.repo
+
+    const head_ref = process.env.GITHUB_HEAD_REF
+
+    if (!head_ref) {
+        core.info("attempted to run action not within context of a Pull Request")
+        return
+    } else {
+        core.info(`working with ${head_ref}`)
+    }
 
     if (token) {
         const input: Input = {
@@ -19,7 +29,8 @@ new Promise(async () => {
             repo: repo,
             skip_ci: skip_ci == "true",
             version_filename: version_filename,
-            skip_ci_commit_string: skip_ci_commit_string
+            skip_ci_commit_string: skip_ci_commit_string,
+            head_ref: head_ref
         }
 
         const manager = new ActionManager(input)

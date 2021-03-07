@@ -1,5 +1,6 @@
-import * as core from "@actions/core"
 import * as base64 from "base-64"
+import {HttpError} from "http-errors"
+import * as core from "@actions/core"
 import {Octokit} from "@octokit/rest"
 
 import Utils from "./utils"
@@ -11,10 +12,9 @@ export type Input = {
     readonly repo: string
     readonly skip_ci: boolean
     readonly skip_ci_commit_string: string
-    readonly version_filename: string
+    readonly version_filename: string,
+    readonly head_ref: string
 }
-
-const INVALID_MERGE_MSG = "Merge commit message contains more info than needed to make a tag"
 
 const VERSION_TEMPLATE = `MAJOR=<MAJOR_VERSION>
 MINOR=<MINOR_VERSION>
@@ -54,23 +54,7 @@ class ActionManager {
 
         core.info(`using default branch ${default_branch}`)
 
-        const latest_commit = await kit.request(`GET /repos/{owner}/{repo}/commits/${default_branch}`, base_params)
-
-        const message = latest_commit.data.commit.message
-
-        const is_merge_commit = Utils.isMergeCommit(message)
-
-        if (!is_merge_commit) {
-            core.info(`latest commit is not a Merge commit: ${message}`)
-            return
-        }
-
-        const merged_branch = Utils.getBranchFromMergeCommit(owner, message)
-
-        if (merged_branch == null) {
-            core.info(INVALID_MERGE_MSG)
-            return
-        }
+        const merged_branch = this.input.head_ref
 
         const branch_type = Utils.getBranchType(merged_branch)
 
@@ -113,6 +97,11 @@ class ActionManager {
             }
 
         } catch (e) {
+            if (e instanceof HttpError && e.statusCode != 404) { // 404 if no releases just yet
+                core.error(e.message)
+            } else if (e instanceof HttpError) {
+                core.error(e.message)
+            }
             latest_version = Utils.getVersion("0.0.0")
         }
 
@@ -171,7 +160,12 @@ class ActionManager {
             prev_blob_sha = prev_content_blob_response.data.sha
 
         } catch (e) {
-            core.error(e)
+            if (e instanceof HttpError && e.statusCode != 404) {
+                core.error(e.message)
+            } else if (e instanceof HttpError) {
+                core.error(e.message)
+            }
+
             prev_blob_sha = null
         }
 
@@ -185,7 +179,11 @@ class ActionManager {
             new_content_blob_sha = new_content_blob_response.data.sha
 
         } catch (e) {
-            core.error(e)
+            if (e instanceof HttpError) {
+                core.error(e.message)
+            } else {
+                core.error(e)
+            }
             core.error("could not create content blob")
             new_content_blob_sha = null
         }
@@ -210,7 +208,11 @@ class ActionManager {
 
             core.info(`successfully updated ${version_file}`)
         } catch (e) {
-            core.error(e)
+            if (e instanceof HttpError) {
+                core.error(e.message)
+            } else {
+                core.error(e)
+            }
             core.error("could not update content")
             return
         }
