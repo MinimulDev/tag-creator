@@ -159,6 +159,22 @@ class ActionManager {
 
         let new_content_blob_sha: string | null
 
+        let prev_blob_sha: string | null
+
+        try {
+            const prev_content_blob_response = await kit.request("GET /repos/{owner}/{repo}/contents/{path}", {
+                ...base_params,
+                path: version_file
+            })
+
+            // @ts-ignore
+            prev_blob_sha = prev_content_blob_response.data.sha
+
+        } catch (e) {
+            core.error(e)
+            prev_blob_sha = null
+        }
+
         try {
             const new_content_blob_response = await kit.request("POST /repos/{owner}/{repo}/git/blobs", {
                 ...base_params,
@@ -189,7 +205,7 @@ class ActionManager {
                 path: version_file,
                 message: update_msg,
                 content: base64.encode(new_version_content),
-                sha: new_content_blob_sha
+                sha: prev_blob_sha ?? undefined
             })
 
             core.info(`successfully updated ${version_file}`)
