@@ -18,28 +18,6 @@ class Utils {
         return Utils.MergeRegex.test(msg)
     }
 
-    static getBranchFromMergeCommit = (owner: string, msg: string): string | null => {
-        if (owner == "" || msg == "") return null
-
-        try {
-            const split = msg.split(Utils.MergeRegex)
-
-            if (split.length != 2) {
-                return null
-            }
-
-            const owner_branch_split = split[1].trimEnd().split(`${owner}/`)
-
-            if (owner_branch_split.length != 2) {
-                return null
-            }
-
-            return owner_branch_split[1].trimEnd()
-        } catch (e) {
-            return null
-        }
-    }
-
     static getBranchType(branch: string): BranchType | null {
         const split = branch.split("/")
         if (split.length <= 1) return null

@@ -25,45 +25,6 @@ describe("utils", () => {
         })
     })
 
-    describe("getBranchFromMergeCommit", () => {
-        const owner = "someOwner"
-
-        it("should get feature/something from merge commit", () => {
-            const branch = "feature/something"
-            const msg = `Merge pull request #1 from ${owner}/${branch}`
-            const actual = Utils.getBranchFromMergeCommit(owner, msg)
-            expect(actual).to.eq(branch)
-        })
-
-        it("should get chore/something from merge commit", () => {
-            const branch = "chore/something"
-            const msg = `Merge pull request #1 from ${owner}/${branch}`
-            const actual = Utils.getBranchFromMergeCommit(owner, msg)
-            expect(actual).to.eq(branch)
-        })
-
-        it("should get docs/something from merge commit", () => {
-            const branch = "docs/something"
-            const msg = `Merge pull request #1 from ${owner}/${branch}`
-            const actual = Utils.getBranchFromMergeCommit(owner, msg)
-            expect(actual).to.eq(branch)
-        })
-
-        it("should get hotfix/something from merge commit", () => {
-            const branch = "hotfix/something"
-            const msg = `Merge pull request #1 from ${owner}/${branch}`
-            const actual = Utils.getBranchFromMergeCommit(owner, msg)
-            expect(actual).to.eq(branch)
-        })
-
-        it("should return null from invalid merge commit", () => {
-            const branch = "docs/something"
-            const msg = `Merge pull request from ${owner}/${branch}`
-            const actual = Utils.getBranchFromMergeCommit(owner, msg)
-            expect(actual).to.be.null
-        })
-    })
-
     describe("isBranchType", () => {
         it("should return feature on feature/something", () => {
             const actual = Utils.getBranchType("feature/something")

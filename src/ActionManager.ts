@@ -11,10 +11,9 @@ export type Input = {
     readonly repo: string
     readonly skip_ci: boolean
     readonly skip_ci_commit_string: string
-    readonly version_filename: string
+    readonly version_filename: string,
+    readonly head_ref: string
 }
-
-const INVALID_MERGE_MSG = "Merge commit message contains more info than needed to make a tag"
 
 const VERSION_TEMPLATE = `MAJOR=<MAJOR_VERSION>
 MINOR=<MINOR_VERSION>
@@ -54,28 +53,23 @@ class ActionManager {
 
         core.info(`using default branch ${default_branch}`)
 
-        const latest_commit = await kit.request(`GET /repos/{owner}/{repo}/commits/${default_branch}`, base_params)
+        let merged_branch: string | null
 
-        const message = latest_commit.data.commit.message
+        const merged_branch_ref = this.input.head_ref
 
-        const is_merge_commit = Utils.isMergeCommit(message)
+        try {
 
-        if (!is_merge_commit) {
-            core.info(`latest commit is not a Merge commit: ${message}`)
+            merged_branch = merged_branch_ref.split("ref/heads/")[1]
+
+        } catch (e) {
+            core.error(e)
             return
         }
 
-        const merged_branch = Utils.getBranchFromMergeCommit(owner, message)
-
-        if (merged_branch == null) {
-            core.info(INVALID_MERGE_MSG)
-            return
-        }
-
-        const branch_type = Utils.getBranchType(merged_branch)
+        const branch_type = Utils.getBranchType(merged_branch_ref)
 
         if (branch_type == null) {
-            core.info(`could not process merged branch ${merged_branch}`)
+            core.info(`could not process merged branch ${merged_branch_ref}`)
             return
         }
 
