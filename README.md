@@ -1,6 +1,6 @@
 ### Description
 
-Welcome to the Minimul tag creator GitHub Action.
+Welcome to the Minimul tag creator GitHub Action!
 
 ### Guide
 
