@@ -1,5 +1,6 @@
-import * as core from "@actions/core"
 import * as base64 from "base-64"
+import {HttpError} from "http-errors"
+import * as core from "@actions/core"
 import {Octokit} from "@octokit/rest"
 
 import Utils from "./utils"
@@ -96,6 +97,11 @@ class ActionManager {
             }
 
         } catch (e) {
+            if (e instanceof HttpError && e.statusCode != 404) { // 404 if no releases just yet
+                core.error(e.message)
+            } else if (e instanceof HttpError) {
+                core.error(e.message)
+            }
             latest_version = Utils.getVersion("0.0.0")
         }
 
@@ -154,7 +160,12 @@ class ActionManager {
             prev_blob_sha = prev_content_blob_response.data.sha
 
         } catch (e) {
-            core.error(e)
+            if (e instanceof HttpError && e.statusCode != 404) {
+                core.error(e.message)
+            } else if (e instanceof HttpError) {
+                core.error(e.message)
+            }
+
             prev_blob_sha = null
         }
 
@@ -168,7 +179,11 @@ class ActionManager {
             new_content_blob_sha = new_content_blob_response.data.sha
 
         } catch (e) {
-            core.error(e)
+            if (e instanceof HttpError) {
+                core.error(e.message)
+            } else {
+                core.error(e)
+            }
             core.error("could not create content blob")
             new_content_blob_sha = null
         }
@@ -193,7 +208,11 @@ class ActionManager {
 
             core.info(`successfully updated ${version_file}`)
         } catch (e) {
-            core.error(e)
+            if (e instanceof HttpError) {
+                core.error(e.message)
+            } else {
+                core.error(e)
+            }
             core.error("could not update content")
             return
         }
