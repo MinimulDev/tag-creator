@@ -9,6 +9,7 @@ new Promise(async () => {
     const skip_ci = core.getInput("token")
     const version_filename = core.getInput("version_file")
     const skip_ci_commit_string = core.getInput("skip_ci_commit_string")
+
     const owner = github.context.repo.owner
     const repo = github.context.repo.repo
 
