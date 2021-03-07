@@ -180,6 +180,8 @@ class ActionManager {
             return
         }
 
+        core.info(`attempting to create/update ${version_file}`)
+
         try {
             await kit.request("PUT /repos/{owner}/{repo}/contents/{path}", {
                 ...base_params,
