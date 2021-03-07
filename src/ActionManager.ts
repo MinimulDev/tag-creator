@@ -16,12 +16,10 @@ export type Input = {
 
 const INVALID_MERGE_MSG = "Merge commit message contains more info than needed to make a tag"
 
-const VERSION_TEMPLATE = `
-MAJOR=<MAJOR_VERSION>
+const VERSION_TEMPLATE = `MAJOR=<MAJOR_VERSION>
 MINOR=<MINOR_VERSION>
 PATCH=<PATCH_VERSION>
-HOTFIX=<HOTFIX_VERSION>
-`
+HOTFIX=<HOTFIX_VERSION>`
 
 class ActionManager {
 
@@ -200,7 +198,6 @@ class ActionManager {
             core.error("could not update content")
             return
         }
-
     }
 }
 

@@ -1,6 +1,6 @@
 import {expect} from "chai"
 
-import Utils from "../src/utils";
+import Utils from "../src/utils"
 
 describe("utils", () => {
     describe("isMergeCommit", () => {
