@@ -40,6 +40,39 @@ Welcome to the Minimul Tag Creator GitHub Action!
 
 ### Example
 
+#### Setup
+
+1. Create a new workflow `.github/workflows/main.yml` (quickstart to GitHub Actions can be
+   found [here](https://docs.github.com/en/actions/quickstart))
+2. Add our action:
+
+The latest release can be found [here](https://github.com/MinimulDev/tag-creator/releases/latest).
+
+```yaml
+on:
+  pull_request:
+    branches:
+      - develop
+    types: [ closed ]
+
+jobs:
+  tag_creation_job:
+    if: github.event.pull_request.merged == true # make sure you run on merge completion, not just any closed PR.
+    runs-on: ubuntu-latest
+    name: tag_creation
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Minimul Tag Creator
+        uses: MinimulDev/tag-creator@<latest-release>
+        with:
+          skip_ci: "false" # Specifies if change to version_file should skip CI, valid values are "true" or "false", defaults to "true".
+          skip_ci_commit_string: "[skip ci]" # If skip_ci == true, specifies string appended to commit, defaults to "[ skip ci ]".
+          version_file: "version.txt" # Version file to keep track of latest version. (defaults to version.txt).
+```
+
+#### Integration
+
 (for this example let's consider you're currently on version `0.0.0`)
 
 1. Create a `feature/some-feature` branch.
