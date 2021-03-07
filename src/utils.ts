@@ -140,12 +140,15 @@ class Utils {
         if (Utils.isMinorType(branch_type)) {
             return {
                 ...current_version,
-                minor: current_version.minor + 1
+                minor: current_version.minor + 1,
+                patch: 0,
+                hotfix: 0
             }
         } else if (Utils.isPatchType(branch_type)) {
             return {
                 ...current_version,
-                patch: current_version.patch + 1
+                patch: current_version.patch + 1,
+                hotfix: 0
             }
         } else if (Utils.isHotfixType(branch_type)) {
             return {
