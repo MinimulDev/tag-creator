@@ -9,9 +9,11 @@ new Promise(async () => {
     const skip_ci = core.getInput("token")
     const version_filename = core.getInput("version_file")
     const skip_ci_commit_string = core.getInput("skip_ci_commit_string")
-    const head_ref = core.getInput("ref")
+
     const owner = github.context.repo.owner
     const repo = github.context.repo.repo
+
+    const head_ref = process.env.GITHUB_HEAD_REF
 
     if (!head_ref) {
         core.info("attempted to run action not within context of a Pull Request")
