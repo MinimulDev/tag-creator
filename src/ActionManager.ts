@@ -172,6 +172,7 @@ class ActionManager {
 
         } catch (e) {
             core.error(e)
+            core.error("could not create content blob")
             new_content_blob_sha = null
         }
 
@@ -182,6 +183,9 @@ class ActionManager {
         try {
             await kit.request(`PUT /repos/{owner}/{repo}/contents/${version_file}`, {
                 ...base_params,
+                headers: {
+                    accept: "application/vnd.github.v3+json",
+                },
                 message: update_msg,
                 content: base64.encode(new_version_content),
                 sha: new_content_blob_sha
@@ -190,6 +194,7 @@ class ActionManager {
             core.info(`successfully updated ${version_file}`)
         } catch (e) {
             core.error(e)
+            core.error("could not update content")
             return
         }
 
