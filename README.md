@@ -45,7 +45,7 @@ Welcome to the Minimul tag creator GitHub Action!
 2. Push changes upstream.
 3. Open PR for `feature/some-feature`.
 4. `<insert your CI pipeline here>`.
-5. Once ready, merge `feature/some-feature` <b>(please keep the default merge commit message!!!)</b>.
+5. Once ready, merge `feature/some-feature` (can choose any merge strategy you prefer).
 6. Minimul Tag Creator with generate a `0.1.0` tag and mark as pre-release.
 6. Profit.
     - If this is your first merge with Minimul Tag Creator, you'll see a new file version.txt in your root directory.
