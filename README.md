@@ -80,7 +80,7 @@ jobs:
 3. Open PR for `feature/some-feature`.
 4. `<insert your CI pipeline here>`.
 5. Once ready, merge `feature/some-feature` (can choose any merge strategy you prefer).
-6. Minimul Tag Creator with generate a `0.1.0` tag and mark as pre-release.
+6. Minimul Tag Creator will generate a `0.1.0` tag and mark as pre-release.
 6. Profit.
     - If this is your first merge with Minimul Tag Creator, you'll see a new file version.txt in your root directory.
       This file can be used for platforms such as Android `versionName` + `versionCode`.
