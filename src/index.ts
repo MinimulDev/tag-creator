@@ -36,6 +36,6 @@ new Promise(async () => {
         const manager = new ActionManager(input)
         await manager.run()
     } else {
-        console.log("GitHub Token required, please set the `token: ${YOUR_GITHUB_TOKEN}` action input/")
+        console.log("GitHub Token required, please set the `token: ${YOUR_GITHUB_TOKEN}` action input")
     }
 }).then()
