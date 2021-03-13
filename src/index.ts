@@ -8,7 +8,7 @@ new Promise(async () => {
 
     const token = core.getInput("token")
     const skip_ci = core.getInput("token")
-    const tmp_version_files = core.getInput("version_files")
+    const tmp_version_file = core.getInput("version_file")
     const skip_ci_commit_string = core.getInput("skip_ci_commit_string")
 
     const owner = github.context.repo.owner
@@ -23,7 +23,7 @@ new Promise(async () => {
         core.info(`working with ${head_ref}`)
     }
 
-    const version_files = Utils.versionFilesToStringArray(tmp_version_files)
+    const version_files = Utils.versionFilesToStringArray(tmp_version_file)
 
     if (token) {
         const input: Input = {
