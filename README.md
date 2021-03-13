@@ -34,7 +34,7 @@ Welcome to the Minimul Tag Creator GitHub Action!
     - `hotfix/some-hotfix` Making hotfix for production failure.
 - *When in doubt, make a chore branch.*
 - `feature` branches are considered a MINOR update.
-- `chore`, `test`, `bugfix`, `docs` branches are considered a PATCH update.
+- `chore`, `test`, `bugfix`, `fix`, `docs` branches are considered a PATCH update.
 - `hotfix` branches are considered a HOTFIX update.
 - Defaults to 'PATCH' update.
 

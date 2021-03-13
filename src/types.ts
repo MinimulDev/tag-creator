@@ -1,5 +1,5 @@
 export const minor_types: string[] = ["feature"]
-export const patch_types: string[] = ["chore", "test", "docs"]
+export const patch_types: string[] = ["chore", "test", "docs", "fix", "bugfix"]
 export const hotfix_types: string[] = ["hotfix"]
 
 export type MinorType = (typeof minor_types)[number]
