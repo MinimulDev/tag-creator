@@ -335,4 +335,30 @@ describe("utils", () => {
             expect(actual).to.eq("0.0.0.1")
         })
     })
+
+    describe("versionFilesToStringArray", () => {
+        it("should handle single file", () => {
+            const version_files = "version.txt"
+
+            const actual = Utils.versionFilesToStringArray(version_files)
+
+            expect(actual).to.deep.eq([version_files])
+        })
+
+        it("should handle 2 files", () => {
+            const version_files = "[version.txt, ./some/other/file.txt]"
+
+            const actual = Utils.versionFilesToStringArray(version_files)
+
+            expect(actual).to.deep.eq(["version.txt", "some/other/file.txt"])
+        })
+
+        it("should handle 3 files", () => {
+            const version_files = "[version.txt, ./some/other/version.properties, \"/yet/another/version.tmp\"]"
+
+            const actual = Utils.versionFilesToStringArray(version_files)
+
+            expect(actual).to.deep.eq(["version.txt", "some/other/version.properties", "yet/another/version.tmp"])
+        })
+    })
 })

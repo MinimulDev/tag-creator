@@ -68,7 +68,15 @@ jobs:
         with:
           skip_ci: "false" # Specifies if change to version_file should skip CI, valid values are "true" or "false", defaults to "true".
           skip_ci_commit_string: "[skip ci]" # If skip_ci == true, specifies string appended to commit, defaults to "[ skip ci ]".
-          version_file: "version.txt" # Version file to keep track of latest version. (defaults to version.txt).
+          version_file: "[""]" # Version file to keep track of latest version. (defaults to version.txt).
+```
+
+### Additional Features
+
+1. If you need to update multiple version files, you can provide an array to `version_file` e.g.
+
+```
+    version_file: "[version.txt, another/version.properties, "./yet/another/version.tmp"]"
 ```
 
 #### Integration
