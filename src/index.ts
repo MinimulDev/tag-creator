@@ -2,12 +2,13 @@ import * as core from "@actions/core"
 import * as github from "@actions/github"
 
 import ActionManager, {Input} from "./ActionManager"
+import Utils from "./utils";
 
 new Promise(async () => {
 
     const token = core.getInput("token")
     const skip_ci = core.getInput("token")
-    const version_filename = core.getInput("version_file")
+    const tmp_version_files = core.getInput("version_files")
     const skip_ci_commit_string = core.getInput("skip_ci_commit_string")
 
     const owner = github.context.repo.owner
@@ -22,13 +23,15 @@ new Promise(async () => {
         core.info(`working with ${head_ref}`)
     }
 
+    const version_files = Utils.versionFilesToStringArray(tmp_version_files)
+
     if (token) {
         const input: Input = {
             token: token,
             owner: owner,
             repo: repo,
             skip_ci: skip_ci == "true",
-            version_filename: version_filename,
+            version_files: version_files,
             skip_ci_commit_string: skip_ci_commit_string,
             head_ref: head_ref
         }

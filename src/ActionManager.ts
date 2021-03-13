@@ -12,7 +12,7 @@ export type Input = {
     readonly repo: string
     readonly skip_ci: boolean
     readonly skip_ci_commit_string: string
-    readonly version_filename: string,
+    readonly version_files: string[],
     readonly head_ref: string
 }
 
@@ -121,15 +121,42 @@ class ActionManager {
 
         core.info(`using version ${str_new_version}`)
 
-        const version_file = this.input.version_filename
+        let update_msg = `release: bump version ${str_new_version}`
+
+        if (this.input.skip_ci) {
+            update_msg += ` ${this.input.skip_ci_commit_string}`
+        }
+
+        for (let file of this.input.version_files) {
+            const updated = await this.updateVersion(base_params, kit, file, new_version, update_msg)
+            if (!updated) return
+        }
+
+        const create_release_response = await kit.request("POST /repos/{owner}/{repo}/releases", {
+            ...base_params,
+            tag_name: str_new_version,
+            name: `v${str_new_version}`,
+            prerelease: true
+        })
+
+        if (create_release_response.status == 201) {
+            core.info(`successfully created tag ${str_new_version} --> ${create_release_response.data.html_url}`)
+        }
+    }
+
+    private updateVersion = async (
+        base_params: any,
+        kit: Octokit,
+        file: string,
+        new_version: VersionType,
+        update_msg: string
+    ): Promise<boolean> => {
 
         const new_version_content: string = `${VERSION_TEMPLATE}`
             .replace("<MAJOR_VERSION>", `${new_version.major}`)
             .replace("<MINOR_VERSION>", `${new_version.minor}`)
             .replace("<PATCH_VERSION>", `${new_version.patch}`)
             .replace("<HOTFIX_VERSION>", `${new_version.hotfix}`)
-
-        let update_msg = `release: bump version ${str_new_version}`
 
         if (this.input.skip_ci) {
             update_msg += ` ${this.input.skip_ci_commit_string}`
@@ -142,7 +169,7 @@ class ActionManager {
         try {
             const prev_content_blob_response = await kit.request("GET /repos/{owner}/{repo}/contents/{path}", {
                 ...base_params,
-                path: version_file
+                path: file
             })
 
             // @ts-ignore
@@ -178,10 +205,10 @@ class ActionManager {
         }
 
         if (new_content_blob_sha == null) {
-            return
+            return false
         }
 
-        core.info(`attempting to create/update ${version_file}`)
+        core.info(`attempting to create/update ${file}`)
 
         try {
             await kit.request("PUT /repos/{owner}/{repo}/contents/{path}", {
@@ -189,13 +216,13 @@ class ActionManager {
                 headers: {
                     accept: "application/vnd.github.v3+json",
                 },
-                path: version_file,
+                path: file,
                 message: update_msg,
                 content: base64.encode(new_version_content),
                 sha: prev_blob_sha ?? undefined
             })
 
-            core.info(`successfully updated ${version_file}`)
+            core.info(`successfully updated ${file}`)
         } catch (e) {
             if (e instanceof HttpError) {
                 core.error(e.message)
@@ -203,20 +230,12 @@ class ActionManager {
                 core.error(e)
             }
             core.error("could not update content")
-            return
+            return false
         }
 
-        const create_release_response = await kit.request("POST /repos/{owner}/{repo}/releases", {
-            ...base_params,
-            tag_name: str_new_version,
-            name: `v${str_new_version}`,
-            prerelease: true
-        })
-
-        if (create_release_response.status == 201) {
-            core.info(`successfully created tag ${str_new_version} --> ${create_release_response.data.html_url}`)
-        }
+        return true
     }
+
 }
 
 export default ActionManager
