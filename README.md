@@ -1,12 +1,12 @@
-### Description
+# Description
 
 Welcome to the Minimul Tag Creator GitHub Action!
 
-### Guide
+## Guide
 
 - A few notes before we get started:
 
-#### Versioning Structure
+### Versioning Structure
 
 - We use a custom versioning semantic similar to semver with a <i>slight</i> difference. Rather than MAJOR.MINOR.PATCH
   we use MAJOR.MINOR.PATCH.HOTFIX which gives us quite a bit more power in our CI/CD flow.
@@ -23,7 +23,7 @@ Welcome to the Minimul Tag Creator GitHub Action!
 - MAJOR updates are considered extreme breaking changes and should be manually created, so Minimul Tag Creator has no
   configuration as such.
 
-#### Branching Structure
+### Branching Structure
 
 - The branching structure is as follows:
     - `feature/some-feature` -> A new feature such as a new UI element, or new business logic.
@@ -38,9 +38,9 @@ Welcome to the Minimul Tag Creator GitHub Action!
 - `hotfix` branches are considered a HOTFIX update.
 - Defaults to 'PATCH' update.
 
-### Example
+## Example
 
-#### Setup
+### Setup
 
 1. Create a new workflow `.github/workflows/main.yml` (quickstart to GitHub Actions can be
    found [here](https://docs.github.com/en/actions/quickstart))
@@ -71,7 +71,7 @@ jobs:
           version_file: "version.txt" # Version file to keep track of latest version. (defaults to version.txt).
 ```
 
-#### Integration
+### Integration
 
 (for this example let's consider you're currently on version `0.0.0`)
 
@@ -84,3 +84,11 @@ jobs:
 6. Profit.
     - If this is your first merge with Minimul Tag Creator, you'll see a new file version.txt in your root directory.
       This file can be used for platforms such as Android `versionName` + `versionCode`.
+
+## Additional Features
+
+1. If you need to update multiple version files, you can provide an array to `version_file` e.g.
+
+```
+    version_file: "[version.txt, another/version.properties, "./yet/another/version.tmp"]"
+```

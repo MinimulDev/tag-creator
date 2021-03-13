@@ -1,3 +1,5 @@
+import path from "path"
+
 import {
     branch_types,
     BranchType,
@@ -142,6 +144,30 @@ class Utils {
         let suffix: string = ""
         if (type.hotfix != 0) suffix = `.${type.hotfix}`
         return `${type.major}.${type.minor}.${type.patch}${suffix}`
+    }
+
+    static versionFilesToStringArray = (version_files: string): string[] => {
+        const output: string[] = []
+
+        if (version_files.startsWith("[") && version_files.endsWith("]")) {
+            const split = version_files.substring(1).slice(0, -1).split(",").map((t) => {
+                let trimmed = t.trim()
+                trimmed = trimmed
+                    .replace(/['"]+/g, '')
+                if (trimmed.startsWith("/")) trimmed = trimmed.substring(1)
+                return trimmed
+            })
+
+            const normalized = split.map((t) => {
+                return path.normalize(t)
+            })
+
+            output.push(...normalized)
+        } else {
+            output.push(version_files)
+        }
+
+        return output
     }
 
     private static isBranchType = (type: string): type is BranchType => {
