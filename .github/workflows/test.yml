@@ -18,4 +18,5 @@ jobs:
         with:
           skip_ci: "false"
           before_upload_tag: |
-            echo "running before commit"
+            echo "run first command"
+            echo "run second command"
