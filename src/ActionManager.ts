@@ -244,9 +244,14 @@ class ActionManager {
         const before_upload_tag = this.input.before_upload_tag
 
         if (before_upload_tag !== "") {
-            core.info(`running before_upload_tag >${before_upload_tag}`)
-            const exit_code = await exec(before_upload_tag)
-            core.info(`before_upload_tag complete with exit code ${exit_code}`)
+            const splits = before_upload_tag.split("\n")
+            for (let line in splits) {
+                const exit_code = await exec(line)
+                if (exit_code != 0) {
+                    core.info(`before_upload_tag command ${line} failed with exit code ${exit_code}`)
+                }
+            }
+            core.info(`before_upload_tag ran successfully`)
         }
     }
 
