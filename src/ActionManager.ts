@@ -213,7 +213,7 @@ class ActionManager {
         const before_upload_tag = this.input.before_upload_tag
 
         if (before_upload_tag !== "") {
-            core.info("running before_upload_tag")
+            core.info(`running before_upload_tag >${before_upload_tag}`)
             await exec(before_upload_tag)
         }
 
