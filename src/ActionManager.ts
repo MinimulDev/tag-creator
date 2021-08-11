@@ -246,6 +246,7 @@ class ActionManager {
         if (before_upload_tag !== "") {
             const splits = before_upload_tag.split("\n")
             for (let line in splits) {
+                core.info(`running command > ${line}`)
                 const exit_code = await exec(line)
                 if (exit_code != 0) {
                     core.info(`before_upload_tag command ${line} failed with exit code ${exit_code}`)
