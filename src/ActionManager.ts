@@ -245,7 +245,7 @@ class ActionManager {
 
         if (before_upload_tag !== "") {
             const splits = before_upload_tag.split("\n")
-            for (let line in splits) {
+            for (let line of splits) {
                 core.info(`running command > ${line}`)
                 const exit_code = await exec(line)
                 if (exit_code != 0) {
