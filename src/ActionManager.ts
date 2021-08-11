@@ -134,6 +134,8 @@ class ActionManager {
             if (!updated) return
         }
 
+        await this.try_run_before_tag_upload_hook()
+
         const create_release_response = await kit.request("POST /repos/{owner}/{repo}/releases", {
             ...base_params,
             tag_name: str_new_version,
@@ -210,14 +212,6 @@ class ActionManager {
             return false
         }
 
-        const before_upload_tag = this.input.before_upload_tag
-
-        if (before_upload_tag !== "") {
-            core.info(`running before_upload_tag >${before_upload_tag}`)
-            const exit_code = await exec(before_upload_tag)
-            core.info(`before_upload_tag complete with exit code ${exit_code}`)
-        }
-
         core.info(`attempting to create/update ${file}`)
 
         try {
@@ -244,6 +238,16 @@ class ActionManager {
         }
 
         return true
+    }
+
+    private try_run_before_tag_upload_hook = async () => {
+        const before_upload_tag = this.input.before_upload_tag
+
+        if (before_upload_tag !== "") {
+            core.info(`running before_upload_tag >${before_upload_tag}`)
+            const exit_code = await exec(before_upload_tag)
+            core.info(`before_upload_tag complete with exit code ${exit_code}`)
+        }
     }
 
 }
