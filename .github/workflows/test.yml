@@ -17,3 +17,5 @@ jobs:
         uses: ./
         with:
           skip_ci: "false"
+          before_upload_tag: |
+            echo "running before commit"
