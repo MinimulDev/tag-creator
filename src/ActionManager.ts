@@ -2,7 +2,7 @@ import * as base64 from "base-64"
 import {HttpError} from "http-errors"
 import * as core from "@actions/core"
 import {Octokit} from "@octokit/rest"
-import {exec} from "child_process"
+import {exec} from "@actions/exec"
 
 import Utils from "./utils"
 import {VersionType} from "./types"
@@ -214,7 +214,8 @@ class ActionManager {
 
         if (before_upload_tag !== "") {
             core.info(`running before_upload_tag >${before_upload_tag}`)
-            await exec(before_upload_tag)
+            const exit_code = await exec(before_upload_tag)
+            core.info(`before_upload_tag complete with exit code ${exit_code}`)
         }
 
         core.info(`attempting to create/update ${file}`)
