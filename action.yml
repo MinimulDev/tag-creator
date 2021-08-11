@@ -17,6 +17,10 @@ inputs:
     description: If skip_ci == true, specifies string appended to commit, defaults to "[skip ci]".
     required: false
     default: "[skip ci]"
+  before_upload_tag:
+    description: Run code before uploading the tag, e.g. re-build packages with updated version.
+    required: false
+    default: ""
 runs:
   using: node12
   main: dist/bundle.js

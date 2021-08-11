@@ -2,6 +2,7 @@ import * as base64 from "base-64"
 import {HttpError} from "http-errors"
 import * as core from "@actions/core"
 import {Octokit} from "@octokit/rest"
+import {exec} from "child_process"
 
 import Utils from "./utils"
 import {VersionType} from "./types"
@@ -13,7 +14,8 @@ export type Input = {
     readonly skip_ci: boolean
     readonly skip_ci_commit_string: string
     readonly version_files: string[],
-    readonly head_ref: string
+    readonly head_ref: string,
+    readonly before_upload_tag: string
 }
 
 const VERSION_TEMPLATE = `MAJOR=<MAJOR_VERSION>
@@ -206,6 +208,13 @@ class ActionManager {
 
         if (new_content_blob_sha == null) {
             return false
+        }
+
+        const before_upload_tag = this.input.before_upload_tag
+
+        if (before_upload_tag !== "") {
+            core.info("running before_upload_tag")
+            await exec(before_upload_tag)
         }
 
         core.info(`attempting to create/update ${file}`)
