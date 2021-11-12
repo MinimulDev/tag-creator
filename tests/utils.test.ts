@@ -1,6 +1,7 @@
 import {expect} from "chai"
 
 import Utils from "../src/utils"
+import {describe} from "mocha";
 
 describe("utils", () => {
     describe("isMergeCommit", () => {
@@ -116,7 +117,7 @@ describe("utils", () => {
                 major: 0,
                 minor: 0,
                 patch: 0,
-                hotfix: 0
+                hotfix: null
             })
         })
 
@@ -126,7 +127,7 @@ describe("utils", () => {
                 major: 0,
                 minor: 0,
                 patch: 1,
-                hotfix: 0
+                hotfix: null
             })
         })
 
@@ -136,7 +137,7 @@ describe("utils", () => {
                 major: 0,
                 minor: 1,
                 patch: 0,
-                hotfix: 0
+                hotfix: null
             })
         })
 
@@ -146,7 +147,7 @@ describe("utils", () => {
                 major: 1,
                 minor: 0,
                 patch: 0,
-                hotfix: 0
+                hotfix: null
             })
         })
 
@@ -156,7 +157,7 @@ describe("utils", () => {
                 major: 0,
                 minor: 1,
                 patch: 1,
-                hotfix: 0
+                hotfix: null
             })
         })
 
@@ -166,7 +167,7 @@ describe("utils", () => {
                 major: 1,
                 minor: 1,
                 patch: 0,
-                hotfix: 0
+                hotfix: null
             })
         })
 
@@ -176,7 +177,7 @@ describe("utils", () => {
                 major: 1,
                 minor: 1,
                 patch: 1,
-                hotfix: 0
+                hotfix: null
             })
         })
 
@@ -242,44 +243,90 @@ describe("utils", () => {
     })
 
     describe("getNewVersion", () => {
-        const current_version = {
-            major: 0,
-            minor: 0,
-            patch: 0,
-            hotfix: 0
-        }
-        it("should update minor", () => {
-            const actual = Utils.getNewVersion(current_version, "feature")
-            expect(actual).to.deep.eq(
-                {
-                    major: 0,
-                    minor: 1,
-                    patch: 0,
-                    hotfix: 0
-                }
-            )
+        describe("use_semver == true", () => {
+            const use_semver = true
+            const current_version = {
+                major: 0,
+                minor: 0,
+                patch: 0,
+                hotfix: null
+            }
+            it("should update minor", () => {
+                const actual = Utils.getNewVersion(current_version, "feature", use_semver)
+                expect(actual).to.deep.eq(
+                    {
+                        major: 0,
+                        minor: 1,
+                        patch: 0,
+                        hotfix: null
+                    }
+                )
+            })
+            it("should update patch", () => {
+                const actual = Utils.getNewVersion(current_version, "chore", use_semver)
+                expect(actual).to.deep.eq(
+                    {
+                        major: 0,
+                        minor: 0,
+                        patch: 1,
+                        hotfix: null
+                    }
+                )
+            })
+            it("should update hotfix", () => {
+                const actual = Utils.getNewVersion(current_version, "hotfix", use_semver)
+                expect(actual).to.deep.eq(
+                    {
+                        major: 0,
+                        minor: 0,
+                        patch: 1,
+                        hotfix: null
+                    }
+                )
+            })
         })
-        it("should update patch", () => {
-            const actual = Utils.getNewVersion(current_version, "chore")
-            expect(actual).to.deep.eq(
-                {
-                    major: 0,
-                    minor: 0,
-                    patch: 1,
-                    hotfix: 0
-                }
-            )
-        })
-        it("should update hotfix", () => {
-            const actual = Utils.getNewVersion(current_version, "chore")
-            expect(actual).to.deep.eq(
-                {
-                    major: 0,
-                    minor: 0,
-                    patch: 1,
-                    hotfix: 0
-                }
-            )
+        describe("use_semver == false", () => {
+            const use_semver = false
+            const current_version = {
+                major: 0,
+                minor: 0,
+                patch: 0,
+                hotfix: 0
+            }
+
+            it("should update minor", () => {
+                const actual = Utils.getNewVersion(current_version, "feature", use_semver)
+                expect(actual).to.deep.eq(
+                    {
+                        major: 0,
+                        minor: 1,
+                        patch: 0,
+                        hotfix: 0
+                    }
+                )
+            })
+            it("should update patch", () => {
+                const actual = Utils.getNewVersion(current_version, "chore", use_semver)
+                expect(actual).to.deep.eq(
+                    {
+                        major: 0,
+                        minor: 0,
+                        patch: 1,
+                        hotfix: 0
+                    }
+                )
+            })
+            it("should update hotfix", () => {
+                const actual = Utils.getNewVersion(current_version, "hotfix", use_semver)
+                expect(actual).to.deep.eq(
+                    {
+                        major: 0,
+                        minor: 0,
+                        patch: 0,
+                        hotfix: 1
+                    }
+                )
+            })
         })
     })
 

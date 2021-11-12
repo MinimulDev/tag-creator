@@ -14,5 +14,5 @@ export type VersionType = {
     major: number
     minor: number
     patch: number
-    hotfix: number
+    hotfix: number | null
 }

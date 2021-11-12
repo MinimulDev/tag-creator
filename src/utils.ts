@@ -69,9 +69,15 @@ class Utils {
             return 1
         }
 
-        if (first.hotfix > second.hotfix) {
+        if (first.hotfix != null && second.hotfix != null) {
+            if (first.hotfix > second.hotfix) {
+                return -1
+            } else if (first.hotfix < second.hotfix) {
+                return 1
+            }
+        } else if (first.hotfix != null) {
             return -1
-        } else if (first.hotfix < second.hotfix) {
+        } else if (second.hotfix != null) {
             return 1
         }
 
@@ -98,7 +104,7 @@ class Utils {
                     major: major,
                     minor: minor,
                     patch: patch,
-                    hotfix: 0
+                    hotfix: null
                 }
             } else if (l == 4) {
                 const str_hotfix = split[3]
@@ -116,24 +122,35 @@ class Utils {
         return null
     }
 
-    static getNewVersion = (current_version: VersionType, branch_type: BranchType): VersionType | null => {
+    static getNewVersion = (current_version: VersionType, branch_type: BranchType, use_semver: boolean): VersionType | null => {
         if (Utils.isMinorType(branch_type)) {
             return {
                 ...current_version,
                 minor: current_version.minor + 1,
                 patch: 0,
-                hotfix: 0
+                hotfix: use_semver ? null : 0
             }
         } else if (Utils.isPatchType(branch_type)) {
             return {
                 ...current_version,
                 patch: current_version.patch + 1,
-                hotfix: 0
+                hotfix: use_semver ? null : 0
             }
         } else if (Utils.isHotfixType(branch_type)) {
-            return {
-                ...current_version,
-                hotfix: current_version.hotfix + 1
+            if (use_semver) {
+                return {
+                    ...current_version,
+                    patch: current_version.patch + 1,
+                    hotfix: null
+                }
+            } else {
+                let new_hotfix: number
+                if (current_version.hotfix == null) new_hotfix = 1
+                else new_hotfix = current_version.hotfix + 1
+                return {
+                    ...current_version,
+                    hotfix: new_hotfix
+                }
             }
         } else {
             return null
@@ -142,7 +159,7 @@ class Utils {
 
     static versionTypeToString = (type: VersionType): string => {
         let suffix: string = ""
-        if (type.hotfix != 0) suffix = `.${type.hotfix}`
+        if (type.hotfix != null && type.hotfix != 0) suffix = `.${type.hotfix}`
         return `${type.major}.${type.minor}.${type.patch}${suffix}`
     }
 

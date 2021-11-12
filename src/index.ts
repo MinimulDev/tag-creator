@@ -11,6 +11,7 @@ new Promise(async () => {
     const tmp_version_file = core.getInput("version_file")
     const skip_ci_commit_string = core.getInput("skip_ci_commit_string")
     const before_upload_tag = core.getInput("before_upload_tag")
+    const use_semver = Boolean(core.getInput("use_semver"))
 
     const owner = github.context.repo.owner
     const repo = github.context.repo.repo
@@ -35,7 +36,8 @@ new Promise(async () => {
             version_files: version_files,
             skip_ci_commit_string: skip_ci_commit_string,
             head_ref: head_ref,
-            before_upload_tag: before_upload_tag
+            before_upload_tag: before_upload_tag,
+            use_semver: use_semver
         }
 
         const manager = new ActionManager(input)
