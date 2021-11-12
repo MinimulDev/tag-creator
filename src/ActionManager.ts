@@ -16,12 +16,21 @@ export type Input = {
     readonly version_files: string[],
     readonly head_ref: string,
     readonly before_upload_tag: string
+    readonly use_semver: boolean
 }
 
-const VERSION_TEMPLATE = `MAJOR=<MAJOR_VERSION>
+const get_version_template = (use_semver: boolean): string => {
+    if (use_semver) {
+        return `MAJOR=<MAJOR_VERSION>
+MINOR=<MINOR_VERSION>
+PATCH=<PATCH_VERSION>`
+    } else {
+        return `MAJOR=<MAJOR_VERSION>
 MINOR=<MINOR_VERSION>
 PATCH=<PATCH_VERSION>
 HOTFIX=<HOTFIX_VERSION>`
+    }
+}
 
 class ActionManager {
 
@@ -112,7 +121,9 @@ class ActionManager {
             return
         }
 
-        const new_version = Utils.getNewVersion(current_version, branch_type)
+        const use_semver = this.input.use_semver
+
+        const new_version = Utils.getNewVersion(current_version, branch_type, use_semver)
 
         if (new_version == null) {
             core.info(`could not update version from branch ${merged_branch}`)
@@ -130,7 +141,7 @@ class ActionManager {
         }
 
         for (let file of this.input.version_files) {
-            const updated = await this.updateVersion(base_params, kit, file, new_version, update_msg)
+            const updated = await this.updateVersion(base_params, kit, file, new_version, update_msg, use_semver)
             if (!updated) return
         }
 
@@ -153,10 +164,11 @@ class ActionManager {
         kit: Octokit,
         file: string,
         new_version: VersionType,
-        update_msg: string
+        update_msg: string,
+        use_semver: boolean
     ): Promise<boolean> => {
 
-        const new_version_content: string = `${VERSION_TEMPLATE}`
+        const new_version_content = get_version_template(use_semver)
             .replace("<MAJOR_VERSION>", `${new_version.major}`)
             .replace("<MINOR_VERSION>", `${new_version.minor}`)
             .replace("<PATCH_VERSION>", `${new_version.patch}`)

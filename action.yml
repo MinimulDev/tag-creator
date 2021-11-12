@@ -21,6 +21,10 @@ inputs:
     description: Run code before uploading the tag, e.g. re-build packages with updated version.
     required: false
     default: ""
+  use_semver:
+    description: Use conventional MAJOR.MINOR.PATCH; hotfix branches will incremember PATCH version. Defaults to false.
+    required: true
+    default: "false"
 runs:
   using: node12
   main: dist/bundle.js
