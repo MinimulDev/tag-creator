@@ -8,17 +8,23 @@ Welcome to the Minimul Tag Creator GitHub Action!
 
 ### Versioning Structure
 
-- We use a custom versioning semantic similar to semver with a <i>slight</i> difference. Rather than MAJOR.MINOR.PATCH
-  we use MAJOR.MINOR.PATCH.HOTFIX which gives us quite a bit more power in our CI/CD flow.
-- If no hotfix is applied, out of simplicity we omit the .HOTFIX
-    - e.g. 0.0.1 =
-        ```json
-        { "major": 0, "minor": 0, "patch": 1, "hotfix": 0 }
-        ```
-      and 0.0.0.1 =
-        ```json
-        { "major": 0, "minor": 0, "patch": 0, "hotfix": 1 }
-        ```
+- There are 2 types of versioning you can apply. Conventional semantic versioning, or a slightly more verbose structure.
+    - The more verbose structure uses MAJOR.MINOR.PATCH.HOTFIX rather than MAJOR.MINOR.PATCH, which gives us quite a bit
+      more power in our CI/CD flow.
+    - If no hotfix is applied, out of simplicity we omit the .HOTFIX
+        - e.g. 0.0.1 =
+            ```json
+            { "major": 0, "minor": 0, "patch": 1, "hotfix": 0 }
+            ```
+          and 0.0.0.1 =
+            ```json
+            { "major": 0, "minor": 0, "patch": 0, "hotfix": 1 }
+            ```
+    - For conventional semantic versioning:
+        - 0.0.1 =
+            ```json
+            { "major": 0, "minor": 0, "patch": 0 }
+            ```
 - Tags created are marked as pre-release.
 - MAJOR updates are considered extreme breaking changes and should be manually created, so Minimul Tag Creator has no
   configuration as such.
@@ -69,6 +75,7 @@ jobs:
           skip_ci: "false" # Specifies if change to version_file should skip CI, valid values are "true" or "false", defaults to "true".
           skip_ci_commit_string: "[skip ci]" # If skip_ci == true, specifies string appended to commit, defaults to "[ skip ci ]".
           version_file: "version.txt" # Version file to keep track of latest version. (defaults to version.txt).
+          use_semver: "true" # Use conventional semantic versioning. Defaults to "false".
 ```
 
 ### Integration
